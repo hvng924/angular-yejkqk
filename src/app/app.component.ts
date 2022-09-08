@@ -76,12 +76,12 @@ export class AppComponent implements OnInit {
       this.userForm.markAsPristine();
       this.userForm.markAsUntouched();
       this.submitting = false;
-      this.result = 'Something was wrong. Please try again!';
+      this.result = 'Something went wrong. Please try again!';
       return Promise.reject('Request Failed');
     }
     // Backend call happening here.
     this.submitting = false;
-    this.result = 'Create user successful';
+    this.result = 'User created successfully';
     return { username: user.username, email: user.email, type: user.type };
   }
 }

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 interface UserDto {
   username: string;
@@ -14,7 +14,34 @@ interface UserDto {
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
-  constructor(private fb: FormBuilder) {}
+  public userForm: FormGroup;
+  public userTypes = ['user', 'admin'];
+  public submitting = false;
+  public result = '';
+
+  constructor(private fb: FormBuilder) {
+    this.userForm = this.fb.group({
+      username: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(24),
+        ],
+      ],
+      email: ['', [Validators.required, Validators.email]],
+      type: ['', [Validators.required]],
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(
+            /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[#?!@$%^&*-]).{5,24}$/
+          ),
+        ],
+      ],
+    });
+  }
 
   // CODE HERE
   //
@@ -39,14 +66,22 @@ export class AppComponent implements OnInit {
   ngOnInit() {}
 
   private async createUser(user: UserDto) {
+    console.log(user);
+    this.submitting = true;
     await new Promise((res) => setTimeout(res, 2500));
 
     console.log('test');
 
     if (Math.random() < 0.5) {
+      this.userForm.markAsPristine();
+      this.userForm.markAsUntouched();
+      this.submitting = false;
+      this.result = 'Something was wrong. Please try again!';
       return Promise.reject('Request Failed');
     }
     // Backend call happening here.
+    this.submitting = false;
+    this.result = 'Create user successful';
     return { username: user.username, email: user.email, type: user.type };
   }
 }

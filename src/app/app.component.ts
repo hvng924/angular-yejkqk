@@ -66,22 +66,27 @@ export class AppComponent implements OnInit {
   ngOnInit() {}
 
   private async createUser(user: UserDto) {
-    console.log(user);
     this.submitting = true;
-    await new Promise((res) => setTimeout(res, 2500));
 
-    console.log('test');
-
-    if (Math.random() < 0.5) {
+    try {
+      await this.mockBackendCall(user);
+      this.result = 'User created successfully';
+    } catch (error) {
       this.userForm.markAsPristine();
       this.userForm.markAsUntouched();
+      console.log(error);
+    } finally {
       this.submitting = false;
-      this.result = 'Something went wrong. Please try again!';
+    }
+  }
+
+  private async mockBackendCall(user: UserDto) {
+    await new Promise((res) => setTimeout(res, 2500));
+
+    if (Math.random() < 0.5) {
       return Promise.reject('Request Failed');
     }
-    // Backend call happening here.
-    this.submitting = false;
-    this.result = 'User created successfully';
+
     return { username: user.username, email: user.email, type: user.type };
   }
 }
